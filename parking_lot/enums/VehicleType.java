@@ -1,4 +1,4 @@
-package parking_lot.entities;
+package parking_lot.enums;
 
 public enum VehicleType {
     BIKE,

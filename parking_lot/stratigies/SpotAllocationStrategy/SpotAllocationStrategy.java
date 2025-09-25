@@ -5,5 +5,5 @@ import parking_lot.entities.Spot;
 import parking_lot.entities.Vehicle;
 
 public interface SpotAllocationStrategy {
-    public Spot getNearestSpot(Gate g, Vehicle v);
+    public Spot getSpot(Gate g, Vehicle v);
 }

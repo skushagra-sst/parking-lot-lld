@@ -1,5 +1,7 @@
 package parking_lot.entities;
 
+import parking_lot.enums.VehicleType;
+
 public class Vehicle {
     private VehicleType vehicleType;
     private String vehicleNumber;

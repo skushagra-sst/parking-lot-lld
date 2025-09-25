@@ -6,6 +6,7 @@ import parking_lot.entities.Gate;
 import parking_lot.entities.Spot;
 import parking_lot.entities.Ticket;
 import parking_lot.entities.Vehicle;
+import parking_lot.enums.PaymentStatus;
 import parking_lot.services.BillingService.BillingService;
 import parking_lot.services.SpotAllocation.SpotAllocationService;
 
@@ -23,8 +24,17 @@ public class ParkingLot {
         return this.spotAllocationService.allocateSpot(g, v);
     }
 
-    public double calculateBill(Ticket t) {
-        return this.billingService.calculateBill(t);
+    public void checkout(Ticket t) {
+        t.setExitedAt();
+        this.billingService.pay(t)
+                .onSuccess(() -> {
+
+                    this.spotAllocationService.deallocateSpot(t);
+                })
+                .onFailure(() -> {
+                    System.out.println("Payment Failed for ticket: " + t.getTicketId());
+                }).execute();
+
     }
 
     public void addSpot(Spot s) {

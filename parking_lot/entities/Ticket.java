@@ -10,13 +10,13 @@ public class Ticket {
     private Timestamp issuedAt;
     private Timestamp exitedAt;
 
-    public Ticket(String ticketId, Vehicle vehicle, Spot spot, Gate gate, Timestamp issuedAt, Timestamp exitedAt) {
+    public Ticket(String ticketId, Vehicle vehicle, Spot spot, Gate gate, Timestamp issuedAt) {
         this.ticketId = ticketId;
         this.vehicle = vehicle;
         this.spot = spot;
         this.gate = gate;
         this.issuedAt = issuedAt;
-        this.exitedAt = exitedAt;
+        this.exitedAt = null;
     }
 
     public String getTicketId() {
@@ -45,6 +45,10 @@ public class Ticket {
 
     public void setTicketId(String ticketId) {
         this.ticketId = ticketId;
+    }
+
+    public void setExitedAt() {
+        this.exitedAt = new Timestamp(System.currentTimeMillis());
     }
 
     public Vehicle getVehicle() {
@@ -94,7 +98,7 @@ public class Ticket {
         }
 
         public Ticket build() {
-            return new Ticket(ticketId, vehicle, spot, gate, issuedAt, exitedAt);
+            return new Ticket(ticketId, vehicle, spot, gate, issuedAt);
         }
     }
 }

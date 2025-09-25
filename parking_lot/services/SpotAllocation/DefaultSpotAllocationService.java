@@ -23,7 +23,8 @@ public class DefaultSpotAllocationService implements SpotAllocationService {
     @Override
     public Ticket allocateSpot(Gate gate, Vehicle vehicle) {
 
-        Spot s = this.spotAllocationStrategy.getNearestSpot(gate, vehicle);
+        Spot s = this.spotAllocationStrategy.getSpot(gate, vehicle);
+        s.setOccupiedBy(vehicle);
 
         return new Ticket.Builder()
                 .setGate(gate)
@@ -32,6 +33,12 @@ public class DefaultSpotAllocationService implements SpotAllocationService {
                 .setTicketId(generateTicketID())
                 .setIssuedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
+    }
+
+    @Override
+    public void deallocateSpot(Ticket ticket) {
+        Spot s = ticket.getSpot();
+        s.freeSpot();
     }
 
 }

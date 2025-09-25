@@ -4,36 +4,41 @@ import java.util.List;
 import parking_lot.ParkingLot;
 import parking_lot.entities.Gate;
 import parking_lot.entities.Spot;
+import parking_lot.entities.Ticket;
 import parking_lot.entities.Vehicle;
-import parking_lot.entities.VehicleType;
-import parking_lot.services.BillingService.BillingService;
-import parking_lot.services.BillingService.DefaultBillingService;
-import parking_lot.services.SpotAllocation.DefaultSpotAllocationService;
-import parking_lot.services.SpotAllocation.SpotAllocationService;
-import parking_lot.stratigies.BillingStrategy.BillingStrategy;
-import parking_lot.stratigies.BillingStrategy.DefaultBillingStrategy;
-import parking_lot.stratigies.SpotAllocationStrategy.DefaultSpotAllocationStrategy;
-import parking_lot.stratigies.SpotAllocationStrategy.SpotAllocationStrategy;
+import parking_lot.enums.VehicleType;
+import parking_lot.facade.ParkingLotFacade;
+import parking_lot.repository.DistanceRepository.DistanceRepository;
+import parking_lot.repository.DistanceRepository.SimpleDistanceRepository;
 
 public class Main {
-    public static void main(String[] args) {
-
-        SpotAllocationStrategy spotAllocationStrategy = new DefaultSpotAllocationStrategy();
-        SpotAllocationService spotAllocationService = new DefaultSpotAllocationService(spotAllocationStrategy);
-
-        BillingStrategy billingStrategy = new DefaultBillingStrategy();
-        BillingService billingService = new DefaultBillingService(billingStrategy);
-
+    public static void main(String[] args) throws InterruptedException {
         List<Spot> spots = new ArrayList<>();
         List<Gate> gates = new ArrayList<>();
+        DistanceRepository distanceRepository = new SimpleDistanceRepository();
 
-        ParkingLot parkingLot = new ParkingLot.Builder()
-                .setBillingService(billingService)
-                .setSpotAllocationService(spotAllocationService)
-                .setSpots(spots)
-                .setGates(gates)
-                .build();
+        for (int i = 1; i <= 3; i++) {
+            Gate g = new Gate("G" + i);
+            gates.add(g);
+            distanceRepository.addGate(g);
+        }
 
-        parkingLot.allocateSpot(gates.get(0), new Vehicle(VehicleType.CAR, "HP 39A 0118"));
+        for (int i = 1; i <= 10; i++) {
+            Spot s = new Spot("S" + i,
+                    i % 3 == 0 ? VehicleType.BIKE : (i % 3 == 1 ? VehicleType.CAR : VehicleType.TRUCK));
+            spots.add(s);
+            for (Gate g : gates) {
+                distanceRepository.addDistance(g, s, Math.random() * 100);
+            }
+        }
+
+        ParkingLot parkingLot = ParkingLotFacade.create(gates, spots, distanceRepository);
+
+        Vehicle v = new Vehicle(VehicleType.CAR, "HP 39A 0118");
+
+        Ticket t = parkingLot.allocateSpot(gates.get(0), v);
+
+        parkingLot.checkout(t);
+
     }
 }
